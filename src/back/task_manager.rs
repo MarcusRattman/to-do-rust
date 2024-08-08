@@ -64,8 +64,7 @@ impl TaskManager {
                 // old_name new_name, descrip, date, cat
                 let command = command.strip_prefix("update").unwrap().trim();
                 // [old_name, new_name, descrip, date, cat]
-                let composed: Vec<&str> = command.split(",").map(|field| field.trim()).collect();
-
+                let composed: Vec<&str> = command.split(";").map(|field| field.trim()).collect();
                 if composed.len() != 5 {
                     return Err(TaskMgrError::WrongQuery);
                 }

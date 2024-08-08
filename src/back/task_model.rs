@@ -14,7 +14,7 @@ pub struct Task {
 impl Task {
     pub fn new(task: &str) -> Result<Self, TaskError> {
         let task: Vec<String> = task
-            .split(",")
+            .split(";")
             .map(|task| task.trim().to_string())
             .collect();
 
