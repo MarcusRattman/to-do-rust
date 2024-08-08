@@ -94,8 +94,6 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
 
     let left = match_field(&left)?;
 
-    println!("\nParsed: {:?}, {:?}, {:?}\n", left, op, right);
-
     Ok((left, op, right))
 }
 

@@ -2,7 +2,7 @@
 use super::expression::{command_equals, parse_args, LeftVar, Op};
 use super::task_model::parse_task_date;
 use super::{Task, TaskMgrError};
-use std::fmt::{Debug, Display};
+use std::fmt::Display;
 
 #[derive(Debug)]
 pub struct TaskManager {
