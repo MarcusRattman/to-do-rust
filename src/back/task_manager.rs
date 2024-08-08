@@ -182,9 +182,9 @@ impl TaskManager {
 
     /// Because of the disruptive [NaiveDateTime] and [bool] in our [Task] struct fields
     /// we need a generic function to compare all of the involved types.
-    /// Thankfully [NaiveDateTime] already implements [PartiaelEq] and [PartialOrd]
-    /// so we can easily use comparison operators between them, but we also need <[T]>
-    /// to implement [Display], since we're not converting [String] input to [bool], but comparing it's [to_string()] value.
+    /// Thankfully [NaiveDateTime] already implements [PartialEq] and [PartialOrd]
+    /// so we can easily use comparison operators between them, but we also need `<T>`
+    /// to implement [Display], since we're not converting [String] input to [bool], but comparing it's `to_string()` value.
     ///
     /// ```assert_eq!(true.to_string(), "true");```
     fn compare_with_op<T>(&self, one: &T, other: &T, op: &Op) -> bool
