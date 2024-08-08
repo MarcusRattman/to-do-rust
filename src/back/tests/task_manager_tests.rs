@@ -353,3 +353,60 @@ fn command_update_wrong_date() {
     let result = mgr.exec_command("update qwe, zxc, lmao, 2022-09-02, chores");
     assert!(result.is_err());
 }
+
+#[test]
+fn command_select_by_name() {
+    let mut mgr = TaskManager::new();
+    let add = "add qwe, rty, 2015-09-05 00:00, fgh";
+    mgr.exec_command(add);
+    let result = mgr.exec_command("select * where name=qwe");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn command_select_by_wrong_name() {
+    let mut mgr = TaskManager::new();
+    let add = "add qwe, rty, 2015-09-05 00:00, fgh";
+    mgr.exec_command(add);
+    let result = mgr.exec_command("select * where name=zxc");
+    assert!(result.is_err());
+}
+
+#[test]
+fn command_select_by_date() {
+    let mut mgr = TaskManager::new();
+    let add = "add qwe, rty, 2015-09-05 00:00, fgh";
+    mgr.exec_command(add);
+    let result = mgr.exec_command("select * where date=2015-09-05 00:00");
+    assert!(result.is_ok());
+}
+
+#[test]
+fn command_select_by_wrong_date() {
+    let mut mgr = TaskManager::new();
+    let add = "add qwe, rty, 2015-09-05 00:00, fgh";
+    mgr.exec_command(add);
+    let result = mgr.exec_command("select * where date=sdfrwe weq123");
+    assert!(result.is_err());
+}
+
+#[test]
+fn command_select_by_date_not_found() {
+    let mut mgr = TaskManager::new();
+    let add = "add qwe, rty, 2015-09-05 00:00, fgh";
+    mgr.exec_command(add);
+    let result = mgr.exec_command("select * where date=2022-09-05 00:00");
+    assert!(result.is_err());
+}
+
+#[test]
+fn select_partial_match() {
+    let mut mgr = TaskManager::new();
+    let task1 = Task::new("task1, desc1, 2015-09-05 00:00, cat1").unwrap();
+    let task2 = Task::new("task2, desc2, 2015-09-06 00:00, cat2").unwrap();
+    mgr.add(task1);
+    mgr.add(task2);
+    let select = "select * where name like \"task\"".to_string();
+    let result = mgr.select(&select).unwrap();
+    assert_eq!(result.len(), 2);
+}

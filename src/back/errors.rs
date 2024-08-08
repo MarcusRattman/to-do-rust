@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 #[derive(Debug, Clone)]
 pub enum TaskMgrError {
+    GeneralTaskError(TaskError),
     TaskCreationErrorProp(TaskError),
     TaskNotFound,
     TaskUpdateError,

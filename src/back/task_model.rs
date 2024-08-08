@@ -54,7 +54,7 @@ impl Task {
     }
 }
 
-fn parse_task_date(date: String) -> Result<NaiveDateTime, TaskError> {
+pub fn parse_task_date(date: String) -> Result<NaiveDateTime, TaskError> {
     let parsed = NaiveDateTime::parse_from_str(&date, "%Y-%m-%d %H:%M");
     if parsed.is_err() {
         return Err(TaskError::TaskDateParseError);

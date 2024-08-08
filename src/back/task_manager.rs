@@ -1,7 +1,8 @@
 #![allow(dead_code)]
 use super::expression::{command_equals, parse_args, LeftVar, Op};
+use super::task_model::parse_task_date;
 use super::{Task, TaskMgrError};
-use std::fmt::Display;
+use std::fmt::{Debug, Display};
 
 #[derive(Debug)]
 pub struct TaskManager {
@@ -43,6 +44,9 @@ impl TaskManager {
             _ if command_equals(command, "select").unwrap() => {
                 let selected = self.select(&command.to_string());
                 if let Ok(result) = selected {
+                    if result.is_empty() {
+                        return Err(TaskMgrError::TaskNotFound);
+                    }
                     return Ok(format!("Selected: {:?}", result));
                 }
                 Err(selected.unwrap_err())
@@ -162,7 +166,9 @@ impl TaskManager {
         for arg in parsed_args {
             temp = temp
                 .iter()
-                .filter(|task| self.match_field(&arg, task))
+                .filter(|task| {
+                    self.match_field(&arg, task).is_ok() && self.match_field(&arg, task).unwrap()
+                })
                 .cloned()
                 .collect();
         }
@@ -170,13 +176,25 @@ impl TaskManager {
         Ok(temp)
     }
 
-    fn match_field(&self, (leftvar, op, other): &(LeftVar, Op, String), task: &Task) -> bool {
+    fn match_field(
+        &self,
+        (leftvar, op, other): &(LeftVar, Op, String),
+        task: &Task,
+    ) -> Result<bool, TaskMgrError> {
         match leftvar {
-            LeftVar::Name => self.compare_with_op(&task.name.to_string(), other, op),
-            LeftVar::Description => self.compare_with_op(&task.description.to_string(), other, op),
-            LeftVar::Date => self.compare_with_op(&task.date.to_string(), other, op),
-            LeftVar::Category => self.compare_with_op(&task.category.to_string(), other, op),
-            LeftVar::Done => self.compare_with_op(&task.done.to_string(), other, op),
+            LeftVar::Name => Ok(self.compare_with_op(&task.name.to_string(), other, op)),
+            LeftVar::Description => {
+                Ok(self.compare_with_op(&task.description.to_string(), other, op))
+            }
+            LeftVar::Date => {
+                let parsed_date = parse_task_date(other.clone());
+                if let Err(e) = parsed_date {
+                    return Err(TaskMgrError::GeneralTaskError(e));
+                }
+                return Ok(self.compare_with_op(&task.date, &parsed_date.unwrap(), op));
+            }
+            LeftVar::Category => Ok(self.compare_with_op(&task.category.to_string(), other, op)),
+            LeftVar::Done => Ok(self.compare_with_op(&task.done.to_string(), other, op)),
         }
     }
 
@@ -198,7 +216,7 @@ impl TaskManager {
             Op::GrEquals => one.ge(other),
             Op::Less => one.lt(other),
             Op::LeEquals => one.le(other),
-            Op::Like => one.to_string().eq(&other.to_string()),
+            Op::Like => one.to_string().contains(&other.to_string()),
         }
     }
 }
