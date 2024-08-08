@@ -37,7 +37,7 @@ fn match_arg(arg: &str) -> Result<LeftVar, ExpressionError> {
 ///
 /// Or returns [ExpressionError] if failed.
 fn match_op(op: &str) -> Result<Op, ExpressionError> {
-    match op {
+    match op.trim() {
         "<" => Ok(Op::Less),
         "<=" => Ok(Op::LeEquals),
         "=" => Ok(Op::Equals),
@@ -60,15 +60,15 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
     let op: String;
 
     if expression.contains("like") {
-        op = "like".to_string();
+        op = String::from("like");
     } else {
         // filters chars in string if they're in the list of supported operators
         // "arg=test" => "="
-        // "arg=>test" => "=>"
+        // "arg>=test" => ">="
         op = expression
             .chars()
             .filter(|c| match_op(&c.to_string()).is_ok())
-            .collect();
+            .collect::<String>();
     }
 
     // attempts to split arg into two parts by a separator
@@ -102,8 +102,10 @@ pub fn parse_args(args: &str) -> Result<Vec<(LeftVar, Op, String)>, ExpressionEr
         .map(|arg| parse_expr(arg.to_string()))
         .collect();
 
+    println!("\n\nParsed: {:?}\n\n", parsed);
+
     if parsed.iter().any(|arg| arg.is_err()) {
-        return Err(ExpressionError::ExprParseError);
+        return Err(ExpressionError::ArgParseError);
     }
 
     let unwrapped = parsed.into_iter().map(|arg| arg.unwrap()).collect();
