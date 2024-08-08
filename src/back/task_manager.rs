@@ -16,7 +16,11 @@ impl TaskManager {
     pub fn get_tasks(&self) -> &Vec<Task> {
         &self.tasks
     }
-
+    /// Matches the incoming text command in form of:
+    ///
+    /// `"add name, description, 2222-12-12 00:00, category"`
+    ///
+    /// and decides what to do with it
     pub fn exec_command(&mut self, command: &str) -> Result<String, TaskMgrError> {
         match command {
             _ if command_equals(command, "add").unwrap() => {
@@ -51,11 +55,11 @@ impl TaskManager {
                 }
                 Err(marked_done.unwrap_err())
             }
-            // update task_name, name, desc, date, cat
+            // update old_name, new_name, descrip, date, cat
             _ if command_equals(command, "update").unwrap() => {
-                // task_name name, desc, date, cat
+                // old_name new_name, descrip, date, cat
                 let command = command.strip_prefix("update").unwrap().trim();
-                // [task_name, name, desc, date, cat]
+                // [old_name, new_name, descrip, date, cat]
                 let composed: Vec<&str> = command.split(",").map(|field| field.trim()).collect();
 
                 if composed.len() != 5 {
@@ -176,6 +180,13 @@ impl TaskManager {
         }
     }
 
+    /// Because of the disruptive [NaiveDateTime] and [bool] in our [Task] struct fields
+    /// we need a generic function to compare all of the involved types.
+    /// Thankfully [NaiveDateTime] already implements [PartiaelEq] and [PartialOrd]
+    /// so we can easily use comparison operators between them, but we also need <[T]>
+    /// to implement [Display], since we're not converting [String] input to [bool], but comparing it's [to_string()] value.
+    ///
+    /// ```assert_eq!(true.to_string(), "true");```
     fn compare_with_op<T>(&self, one: &T, other: &T, op: &Op) -> bool
     where
         T: PartialEq + PartialOrd + Display,
@@ -187,7 +198,7 @@ impl TaskManager {
             Op::GrEquals => one.ge(other),
             Op::Less => one.lt(other),
             Op::LeEquals => one.le(other),
-            Op::Like => one.to_string().contains(&other.to_string()),
+            Op::Like => one.to_string().eq(&other.to_string()),
         }
     }
 }

@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use super::ExpressionError;
 
+/// Supported [Task] struct fields
 #[derive(Debug)]
 pub enum LeftVar {
     Name,
@@ -10,6 +11,7 @@ pub enum LeftVar {
     Done,
 }
 
+/// Supported operators
 #[derive(Debug)]
 pub enum Op {
     Equals,
