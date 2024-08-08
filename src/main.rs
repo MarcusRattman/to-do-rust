@@ -63,7 +63,7 @@ fn compose_update_query(update_task_name: &String) -> String {
     stdin().read_line(&mut cat).unwrap();
 
     format!(
-        "{}, {}, {}, {}, {}",
+        "{}; {}; {}; {}; {}",
         update_task_name,
         new_name.trim(),
         desc.trim(),
