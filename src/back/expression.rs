@@ -42,6 +42,7 @@ fn match_op(op: &str) -> Result<Op, ExpressionError> {
         "<=" => Ok(Op::LeEquals),
         "=" => Ok(Op::Equals),
         "!=" => Ok(Op::NotEquals),
+        "!" => Ok(Op::NotEquals), // A bit hacky, I admit
         ">" => Ok(Op::Greater),
         ">=" => Ok(Op::GrEquals),
         "like" => Ok(Op::Like),
@@ -67,7 +68,7 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
         // "arg>=test" => ">="
         op = expression
             .chars()
-            .filter(|c| !c.is_alphanumeric())
+            .filter(|c| match_op(&c.to_string()).is_ok())
             .collect::<String>();
     }
 
