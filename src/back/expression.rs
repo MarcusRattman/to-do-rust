@@ -22,7 +22,7 @@ pub enum Op {
 }
 
 /// Matches the incoming string with the according [Task](crate::back::Task) field [LeftVar]
-fn match_arg(arg: &str) -> Result<LeftVar, ExpressionError> {
+fn match_field(arg: &str) -> Result<LeftVar, ExpressionError> {
     match arg {
         "name" => Ok(LeftVar::Name),
         "description" => Ok(LeftVar::Description),
@@ -67,7 +67,7 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
         // "arg>=test" => ">="
         op = expression
             .chars()
-            .filter(|c| match_op(&c.to_string()).is_ok())
+            .filter(|c| !c.is_alphanumeric())
             .collect::<String>();
     }
 
@@ -89,7 +89,7 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
         args.last().unwrap().to_string(),
     );
 
-    let left = match_arg(&left)?;
+    let left = match_field(&left)?;
 
     Ok((left, op, right))
 }
@@ -101,8 +101,6 @@ pub fn parse_args(args: &str) -> Result<Vec<(LeftVar, Op, String)>, ExpressionEr
         .map(|arg| arg.trim())
         .map(|arg| parse_expr(arg.to_string()))
         .collect();
-
-    println!("\n\nParsed: {:?}\n\n", parsed);
 
     if parsed.iter().any(|arg| arg.is_err()) {
         return Err(ExpressionError::ArgParseError);
