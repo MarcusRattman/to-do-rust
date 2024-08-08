@@ -74,7 +74,7 @@ fn parse_expr(expression: String) -> Result<(LeftVar, Op, String), ExpressionErr
     // attempts to split arg into two parts by a separator
     let args: Vec<&str> = expression
         .split(&op)
-        .map(|arg| arg.trim())
+        .map(|arg| arg.trim().trim_matches('"'))
         .filter(|arg| !arg.is_empty())
         .collect();
 
@@ -116,12 +116,12 @@ pub fn parse_args(args: &str) -> Result<Vec<(LeftVar, Op, String)>, ExpressionEr
 /// As an example the function is used in conjunction with
 /// [TaskManager](crate::TaskManager)'s `exec_command` to determine if an incoming string is
 /// a valid command
-pub fn command_equals(command: &str, is: &str) -> Result<bool, ExpressionError> {
+pub fn command_equals(command: &str, other: &str) -> Result<bool, ExpressionError> {
     let command = command.split_whitespace().collect::<Vec<&str>>();
 
     if let None = command.first() {
         return Err(ExpressionError::ArgParseError);
     }
 
-    Ok(command.first().unwrap().trim().eq(is))
+    Ok(command.first().unwrap().trim().eq(other))
 }

@@ -99,6 +99,39 @@ fn select() {
 }
 
 #[test]
+fn select_quotes() {
+    let mut mgr = TaskManager::new();
+    let task = Task::new("qwe, rty, 2015-09-05 00:00, fgh").unwrap();
+    mgr.add(task);
+    let query = "select * where name=\"qwe\"".to_string();
+    let result = mgr.select(&query);
+
+    assert!(result.is_ok());
+}
+
+#[test]
+fn select_quotes_space() {
+    let mut mgr = TaskManager::new();
+    let task = Task::new("qwe asd, rty, 2015-09-05 00:00, fgh").unwrap();
+    mgr.add(task);
+    let query = "select * where name=\"qwe asd\"".to_string();
+    let result = mgr.select(&query);
+
+    assert!(result.is_ok());
+}
+
+#[test]
+fn select_quotes_like() {
+    let mut mgr = TaskManager::new();
+    let task = Task::new("qwe asd, rty, 2015-09-05 00:00, fgh").unwrap();
+    mgr.add(task);
+    let query = "select * where name like \"qwe\"".to_string();
+    let result = mgr.select(&query);
+
+    assert!(result.is_ok());
+}
+
+#[test]
 fn select_unwrap() {
     let mut mgr = TaskManager::new();
     let task = Task::new("qwe, rty, 2015-09-05 00:00, fgh").unwrap();
