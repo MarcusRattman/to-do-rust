@@ -38,12 +38,7 @@ fn manage_input(task_manager: &mut TaskManager) -> Result<String, TaskMgrError> 
         input = compose_update_query(&input)
     }
 
-    let matched = match_input(&input, task_manager);
-    if let Err(e) = matched {
-        return Err(e);
-    }
-
-    Ok(matched.unwrap())
+    match_input(&input, task_manager)
 }
 
 fn compose_update_query(update_task_name: &String) -> String {
