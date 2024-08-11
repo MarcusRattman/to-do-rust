@@ -120,10 +120,7 @@ impl TaskManager {
     }
 
     pub fn check_done(&mut self, task_name: &str) -> Result<&Task, TaskMgrError> {
-        let task = self
-            .tasks
-            .iter_mut()
-            .find(|task| task.name.contains(task_name));
+        let task = self.tasks.iter_mut().find(|task| task.name.eq(task_name));
         if let Some(e) = task {
             e.check_done();
             return Ok(e);
